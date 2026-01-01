@@ -3,7 +3,7 @@ name: Build Mac & Windows
 on:
   push:
     branches: [main]
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
 
 jobs:
   build-mac:
@@ -24,14 +24,16 @@ jobs:
         run: |
           pyinstaller --name HitAndRunPanda \
             --windowed \
-            --onefile \
+            --onedir \
             --add-data "assets:assets" \
             --hidden-import PyQt6.QtNetwork \
+            --hidden-import PyQt6.sip \
             main.py
-      
+          
       - name: Create DMG
         run: |
-          hdiutil create -volname "HitAndRunPanda" -srcfolder dist/HitAndRunPanda.app -ov -format UDZO dist/HitAndRunPanda.dmg
+          cd dist
+          hdiutil create -volname "HitAndRunPanda" -srcfolder HitAndRunPanda.app -ov -format UDZO HitAndRunPanda.dmg
       
       - name: Upload Mac DMG
         uses: actions/upload-artifact@v4
@@ -55,10 +57,10 @@ jobs:
       
       - name: Build Windows Exe
         run: |
-          pyinstaller --name HitAndRunPanda --windowed --onefile --add-data "assets;assets" --hidden-import PyQt6.QtNetwork main.py
+          pyinstaller --name HitAndRunPanda --windowed --onedir --add-data "assets;assets" --hidden-import PyQt6.QtNetwork --hidden-import PyQt6.sip main.py
       
       - name: Upload Windows Exe
         uses: actions/upload-artifact@v4
         with:
           name: HitAndRunPanda-Windows
-          path: dist/HitAndRunPanda.exe
+          path: dist/HitAndRunPanda/
