@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panda — Desktop Productivity Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #09090b;
+            --surface: #131316;
+            --border: #1f1f23;
+            --text: #fafafa;
+            --muted: #71717a;
+            --accent: #22c55e;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(9,9,11,0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo { font-weight: 600; font-size: 14px; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; }
+        .nav-links a:hover { color: var(--text); }
+        .nav-btn {
+            background: var(--text);
+            color: var(--bg);
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .hero {
+            padding: 140px 24px 60px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .hero p {
+            color: var(--muted);
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+        .hero-btns { display: flex; gap: 12px; justify-content: center; }
+        .btn-main {
+            background: var(--text);
+            color: var(--bg);
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .btn-ghost { color: var(--muted); text-decoration: none; font-size: 14px; padding: 12px; }
+        .price-hint { color: var(--muted); font-size: 13px; margin-top: 20px; }
+        .price-hint strong { color: var(--text); }
+
+        /* Demo */
+        .demo {
+            padding: 40px 24px 100px;
+            display: flex;
+            justify-content: center;
+        }
+        .screen-wrap {
+            width: 100%;
+            max-width: 750px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6);
+        }
+        .screen {
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            background: #0d1117;
+        }
+        .screen img.bg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Cursor */
+        .cursor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+        }
+        .cursor svg { width: 100%; height: 100%; }
+
+        /* Panda */
+        .panda-wrap {
+            position: absolute;
+            bottom: 40px;
+            right: -120px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+        .panda { width: 60px; height: 60px; }
+        .bubble {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.2s;
+        }
+        .bubble.show { opacity: 1; transform: scale(1); }
+        .bubble p { color: #111; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+        .bubble-btns { display: flex; gap: 6px; }
+        .bbtn {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            border: none;
+        }
+        .bbtn.yes { background: #22c55e; color: #fff; }
+        .bbtn.no { background: #ef4444; color: #fff; }
+
+        /* Features */
+        .features {
+            padding: 80px 24px;
+            border-top: 1px solid var(--border);
+        }
+        .features h2 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 48px;
+            letter-spacing: -0.5px;
+        }
+        .feat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .feat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .feat-icon { font-size: 20px; margin-bottom: 12px; }
+        .feat h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .feat p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+        /* Pricing */
+        .pricing {
+            padding: 80px 24px;
+            text-align: center;
+        }
+        .pricing h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            letter-spacing: -0.5px;
+        }
+        .price-box {
+            display: inline-block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 40px;
+            text-align: center;
+        }
+        .price-amt { font-size: 40px; font-weight: 600; }
+        .price-sub { color: var(--muted); font-size: 13px; margin: 8px 0 24px; }
+        .price-list {
+            text-align: left;
+            margin-bottom: 24px;
+        }
+        .price-list li {
+            list-style: none;
+            font-size: 13px;
+            color: var(--muted);
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .price-list li::before { content: '✓'; color: var(--accent); }
+        .buy-btn {
+            background: var(--text);
+            color: var(--bg);
+            padding: 12px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        footer {
+            padding: 32px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+        footer p { color: var(--muted); font-size: 12px; }
+
+        @media (max-width: 700px) {
+            .feat-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">panda</div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+        </div>
+        <a href="#pricing" class="nav-btn">Download</a>
+    </nav>
+
+    <section class="hero">
+        <h1>Stay healthy while you work</h1>
+        <p>A minimal desktop companion that reminds you to drink water, stretch, and take breaks.</p>
+        <div class="hero-btns">
+            <a href="#pricing" class="btn-main">Get Panda →</a>
+            <a href="#demo" class="btn-ghost">See demo</a>
+        </div>
+        <p class="price-hint"><strong>$99</strong> one-time</p>
+    </section>
+
+    <section class="demo" id="demo">
+        <div class="screen-wrap">
+            <div class="screen">
+                <img src="screenshot.png" alt="" class="bg" onerror="this.style.background='linear-gradient(135deg,#1e3a5f,#0d1b2a)'">
+                
+                <div class="cursor" id="cursor">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M4 4l16 8-7 2-2 7z"/></svg>
+                </div>
+                
+                <div class="panda-wrap" id="pandaWrap">
+                    <div class="bubble" id="bubble">
+                        <p>Did you drink water? 💧</p>
+                        <div class="bubble-btns">
+                            <span class="bbtn yes">Yes</span>
+                            <span class="bbtn no">No</span>
+                        </div>
+                    </div>
+                    <img src="panda1.png" class="panda" id="panda">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2>Simple by design</h2>
+        <div class="feat-grid">
+            <div class="feat">
+                <div class="feat-icon">🎯</div>
+                <h3>Custom reminders</h3>
+                <p>Set tasks and intervals your way.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">🐼</div>
+                <h3>Cute animations</h3>
+                <p>Panda walks in, asks, walks out.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">📊</div>
+                <h3>Track progress</h3>
+                <p>See your history and build habits.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">🚨</div>
+                <h3>Red alert mode</h3>
+                <p>Full-screen for urgent reminders.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">🔕</div>
+                <h3>Non-intrusive</h3>
+                <p>Lives in system tray quietly.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon">⚡</div>
+                <h3>Lightweight</h3>
+                <p>Minimal resources, no slowdown.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <h2>One price, forever</h2>
+        <div class="price-box">
+            <div class="price-amt">$99</div>
+            <div class="price-sub">One-time · Lifetime license</div>
+            <ul class="price-list">
+                <li>All features</li>
+                <li>Free updates</li>
+                <li>Windows 10 & 11</li>
+                <li>No subscription</li>
+            </ul>
+            <a href="#" class="buy-btn">Download Now</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Panda</p>
+    </footer>
+
+    <script>
+        const pandaWrap = document.getElementById('pandaWrap');
+        const bubble = document.getElementById('bubble');
+        const panda = document.getElementById('panda');
+        const cursor = document.getElementById('cursor');
+        const screen = document.querySelector('.screen');
+        
+        const frames = ['panda1.png','panda2.png','panda3.png','panda4.png'];
+        let fi = 0, walkInt;
+
+        function walk(on) {
+            if (on) walkInt = setInterval(() => { fi = (fi+1)%4; panda.src = frames[fi]; }, 120);
+            else { clearInterval(walkInt); panda.src = 'panda1.png'; }
+        }
+
+        function animateCursor(x1,y1,x2,y2,dur) {
+            return new Promise(r => {
+                cursor.style.transition = 'none';
+                cursor.style.left = x1 + 'px';
+                cursor.style.top = y1 + 'px';
+                cursor.style.opacity = '1';
+                setTimeout(() => {
+                    cursor.style.transition = `left ${dur}ms ease, top ${dur}ms ease`;
+                    cursor.style.left = x2 + 'px';
+                    cursor.style.top = y2 + 'px';
+                    setTimeout(r, dur);
+                }, 50);
+            });
+        }
+
+        function clickEffect() {
+            cursor.style.transform = 'scale(0.8)';
+            setTimeout(() => cursor.style.transform = 'scale(1)', 100);
+        }
+
+        async function runDemo() {
+            const rect = screen.getBoundingClientRect();
+            const sw = screen.offsetWidth;
+            const sh = screen.offsetHeight;
+
+            // Walk in
+            pandaWrap.style.transition = 'right 1.8s ease-out';
+            pandaWrap.style.right = '20px';
+            walk(true);
+            await new Promise(r => setTimeout(r, 1800));
+            walk(false);
+
+            // Show bubble
+            bubble.classList.add('show');
+            await new Promise(r => setTimeout(r, 800));
+
+            // Cursor moves to Yes button
+            const yesBtn = bubble.querySelector('.yes');
+            const btnRect = yesBtn.getBoundingClientRect();
+            const screenRect = screen.getBoundingClientRect();
+            const targetX = btnRect.left - screenRect.left + 10;
+            const targetY = btnRect.top - screenRect.top + 8;
+
+            await animateCursor(sw * 0.3, sh * 0.5, targetX, targetY, 800);
+            clickEffect();
+            await new Promise(r => setTimeout(r, 200));
+
+            // Response
+            bubble.classList.remove('show');
+            panda.src = 'victory1.png';
+            cursor.style.opacity = '0';
+            await new Promise(r => setTimeout(r, 1200));
+
+            // Walk out
+            pandaWrap.style.transition = 'right 1.8s ease-in';
+            pandaWrap.style.right = '-120px';
+            walk(true);
+            await new Promise(r => setTimeout(r, 1800));
+            walk(false);
+
+            // Reset
+            await new Promise(r => setTimeout(r, 2000));
+            runDemo();
+        }
+
+        setTimeout(runDemo, 1500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+name: Build Mac & Windows
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller pyqt6 pillow
+      
+      - name: Build Mac App
+        run: |
+          pyinstaller --name HitAndRunPanda \
+            --windowed \
+            --onefile \
+            --add-data "assets:assets" \
+            --hidden-import PyQt6.QtNetwork \
+            main.py
+      
+      - name: Create DMG
+        run: |
+          hdiutil create -volname "HitAndRunPanda" -srcfolder dist/HitAndRunPanda.app -ov -format UDZO dist/HitAndRunPanda.dmg
+      
+      - name: Upload Mac DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: HitAndRunPanda-Mac
+          path: dist/HitAndRunPanda.dmg
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller pyqt6 pillow
+      
+      - name: Build Windows Exe
+        run: |
+          pyinstaller --name HitAndRunPanda --windowed --onefile --add-data "assets;assets" --hidden-import PyQt6.QtNetwork main.py
+      
+      - name: Upload Windows Exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: HitAndRunPanda-Windows
+          path: dist/HitAndRunPanda.exe

@@ -1,0 +1,11 @@
+{
+  "name": "hit-and-run-panda-website",
+  "version": "1.0.0",
+  "description": "Landing page for Hit & Run Panda",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server --port=3000"
+  },
+  "author": "",
+  "license": "MIT"
+}
