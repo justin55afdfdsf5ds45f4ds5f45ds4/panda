@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dragon Test</title>
+    <style>
+        body {
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .demo-screen {
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1025 100%);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            width: 600px;
+            height: 350px;
+            border: 1px solid #333;
+        }
+        .dragon-wrap {
+            position: absolute;
+            bottom: 10px;
+            right: -250px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+        .dragon {
+            font-size: 60px;
+            line-height: 1;
+        }
+        .dragon-banner {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: sans-serif;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(245,158,11,0.4);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+        }
+        .dragon-banner.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-screen">
+        <div class="dragon-wrap" id="dragonWrap">
+            <div class="dragon-banner" id="dragonBanner">📅 Meeting with James happening at 4:30PM Today</div>
+            <div class="dragon">🐉</div>
+        </div>
+    </div>
+
+    <script>
+        const dragonWrap = document.getElementById('dragonWrap');
+        const dragonBanner = document.getElementById('dragonBanner');
+
+        function sleep(ms) {
+            return new Promise(r => setTimeout(r, ms));
+        }
+
+        async function runDragonDemo() {
+            console.log('Dragon demo starting...');
+            
+            // Reset position
+            dragonWrap.style.transition = 'none';
+            dragonWrap.style.right = '-250px';
+            dragonBanner.classList.remove('show');
+            await sleep(500);
+
+            // Slide in from right
+            console.log('Sliding in...');
+            dragonWrap.style.transition = 'right 2s ease-out';
+            dragonWrap.style.right = '20px';
+            await sleep(2000);
+
+            // Show banner
+            console.log('Showing banner...');
+            dragonBanner.classList.add('show');
+            await sleep(3000);
+
+            // Hide banner
+            dragonBanner.classList.remove('show');
+            await sleep(300);
+
+            // Slide out to left
+            console.log('Sliding out...');
+            dragonWrap.style.transition = 'right 2s ease-in';
+            dragonWrap.style.right = '120%';
+            await sleep(2500);
+
+            // Loop
+            runDragonDemo();
+        }
+
+        runDragonDemo();
+    </script>
+</body>
+</html>
